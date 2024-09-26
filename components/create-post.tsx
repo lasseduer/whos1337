@@ -81,7 +81,7 @@ export const CreatePost: React.FC = () => {
           onChange={handleChange}
         />
         <Spacer y={1.5} />
-        <Button color="primary" disabled={isSubmitting} onClick={handleSubmit}>
+        <Button color="primary" disabled={isSubmitting || !formData.message || !formData.name} isLoading={isSubmitting} onClick={handleSubmit}>
         {isSubmitting ? 'Submitting...' : 'Submit'}
         </Button>
       </form>
