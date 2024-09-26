@@ -1,11 +1,11 @@
 import { title } from "@/components/primitives";
-import { Posts } from "@/components/posts";
+import { CreatePost } from "@/components/create-post";
 
-export default function Whos1337Page() {
+export default function Be1337Page() {
   return (
     <div>
       <h1 className={title()}>Who&apos;s 1337</h1>
-      <Posts />
+      <CreatePost />
     </div>
   );
 }

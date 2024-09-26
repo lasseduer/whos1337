@@ -8,7 +8,7 @@ import {
   TableColumn,
   TableRow,
   TableCell,
-} from "@nextui-org/table";
+} from "@nextui-org/react";
 
 import { PostDto } from "@/app/models/dtos";
 
