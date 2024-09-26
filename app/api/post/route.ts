@@ -1,21 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { format } from "date-fns";
+import { sql } from "@vercel/postgres";
+import ShortUniqueId from "short-unique-id";
 
-import { PostDto } from "./../../models/dtos";
+import { NewPostDto, PostDto } from "./../../models/dtos";
 
 export async function GET(_: NextRequest) {
-  const posts: PostDto[] = [
-    { id: 1, name: "John Doe", message: "Hello, World!", timestamp: "2024-09-25T13:37:05.542" },
-    { id: 2, name: "Jane Doe", message: "Hi, there!", timestamp: "2024-09-25T13:37:02.883" },
-    { id: 3, name: "John Smith", message: "Hey, You!", timestamp: "2024-09-25T13:37:32.129" },
-  ];
-  
-  return NextResponse.json(posts);
+  const posts = await sql`SELECT * FROM Posts;`;
+  const postDto = posts.rows.map(
+    (post) =>
+      ({
+        message: post.message,
+        name: post.name,
+        timestamp: post.timestamp,
+      }) as PostDto
+  );
+
+  return NextResponse.json(postDto);
 }
 
 export async function POST(req: NextRequest) {
   const postTime = format(new Date(), "yyyy-MM-dd HH:mm:ss.SSS");
-  const post: PostDto = await req.json();
+  const post: NewPostDto = await req.json();
+  const newId = new ShortUniqueId({ length: 12 }).randomUUID();
+
+  try {
+    if (!post) throw new Error("Post is required");
+    await sql`INSERT INTO Posts (Id, Name, Message, Timestamp) VALUES (${newId}, ${post.name}, ${post.message}, ${post.timestamp});`;
+  } catch (error) {
+    return NextResponse.json({ error }, { status: 500 });
+  }
 
   return NextResponse.json({
     message: `POST successfully. Thank you ${post.name} for posting '${post.message}' at ${postTime}`,
