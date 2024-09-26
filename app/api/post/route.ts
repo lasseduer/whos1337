@@ -8,8 +8,9 @@ import { NewPostDto, PostDto } from "./../../models/dtos";
 export async function GET(_: NextRequest) {
   const posts = await sql`SELECT * FROM Posts;`;
   const postDto = posts.rows.map(
-    (post) =>
+    (post, index) =>
       ({
+        id: index,
         message: post.message,
         name: post.name,
         timestamp: post.timestamp,
