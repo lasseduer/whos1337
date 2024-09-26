@@ -16,7 +16,7 @@ This is a template for creating applications using Next.js 14 (app directory) an
 
 ## How to Use
 
-### Use the template with create-next-app
+### Use the template with create-next-app 
 
 To create a new project based on this template using `create-next-app`, run the following command:
 
