@@ -9,7 +9,11 @@
 		"lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
 	},
 	"dependencies": {
+		"@nextui-org/button": "^2.0.38",
+		"@nextui-org/input": "^2.2.5",
 		"@nextui-org/react": "^2.4.8",
+		"@nextui-org/system": "^2.2.6",
+		"@nextui-org/theme": "^2.2.11",
 		"@react-aria/ssr": "3.9.4",
 		"@react-aria/visually-hidden": "3.8.12",
 		"@vercel/postgres": "^0.10.0",

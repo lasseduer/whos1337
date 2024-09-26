@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, ChangeEvent } from "react";
-import { Input, Button, Spacer } from '@nextui-org/react';
+import { useRouter } from 'next/navigation'
+import { Input, Button, Spacer } from "@nextui-org/react";
 
 import { NewPostDto } from "@/app/models/dtos";
 
@@ -11,11 +12,15 @@ interface FormData {
 }
 
 export const CreatePost: React.FC = () => {
+  const router = useRouter();
   // State to hold form inputs with typed data
   const [formData, setFormData] = useState<FormData>({
     name: "",
     message: "",
   });
+
+  // State to track submission status
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -28,6 +33,7 @@ export const CreatePost: React.FC = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault(); // Prevent page reload on form submit
+    setIsSubmitting(true);
     const requestBody: NewPostDto = {
       message: formData.message,
       name: formData.name,
@@ -47,13 +53,14 @@ export const CreatePost: React.FC = () => {
         throw new Error("Failed to submit form");
       }
     } catch (error) {
+      setIsSubmitting(false);
       console.error("Error submitting the form:", error);
     }
+    router.push("/whos1337")
   };
 
   return (
     <div>
-      <h2>Submit your info</h2>
       <form>
         <Input
           fullWidth
@@ -74,8 +81,8 @@ export const CreatePost: React.FC = () => {
           onChange={handleChange}
         />
         <Spacer y={1.5} />
-        <Button color="primary" onClick={handleSubmit}>
-          Submit
+        <Button color="primary" disabled={isSubmitting} onClick={handleSubmit}>
+        {isSubmitting ? 'Submitting...' : 'Submit'}
         </Button>
       </form>
     </div>

@@ -1,3 +1,4 @@
+import { CreatePost } from "@/components/create-post";
 import { title } from "@/components/primitives";
 
 export default function Home() {
@@ -9,6 +10,12 @@ export default function Home() {
         <br />
         <br />
         <span className={title()}>Master the game, own the name!</span>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <CreatePost />
       </div>
     </section>
   );
