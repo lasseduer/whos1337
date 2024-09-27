@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, ChangeEvent } from "react";
-import { useRouter } from 'next/navigation'
-import { Input, Button, Spacer } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import {Spacer} from "@nextui-org/spacer";
+import {Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
+import { format } from "date-fns";
 
 import { NewPostDto } from "@/app/models/dtos";
+import { getLocalTimezoneOffset } from "@/app/utils";
 
 interface FormData {
   name: string;
@@ -32,12 +36,16 @@ export const CreatePost: React.FC = () => {
   };
 
   const handleSubmit = async (e: any) => {
+    const postCreated = new Date();
+
     e.preventDefault(); // Prevent page reload on form submit
     setIsSubmitting(true);
+
     const requestBody: NewPostDto = {
       message: formData.message,
       name: formData.name,
-      timestamp: new Date().toISOString(),
+      timestamp: `${format(postCreated, "yyyy-MM-dd HH:mm:ss.SSS")}${getLocalTimezoneOffset()}`,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
 
     try {
@@ -56,7 +64,7 @@ export const CreatePost: React.FC = () => {
       setIsSubmitting(false);
       console.error("Error submitting the form:", error);
     }
-    router.push("/whos1337")
+    router.push("/whos1337");
   };
 
   return (
@@ -81,8 +89,13 @@ export const CreatePost: React.FC = () => {
           onChange={handleChange}
         />
         <Spacer y={1.5} />
-        <Button color="primary" disabled={isSubmitting || !formData.message || !formData.name} isLoading={isSubmitting} onClick={handleSubmit}>
-        {isSubmitting ? 'Submitting...' : 'Submit'}
+        <Button
+          color="primary"
+          disabled={isSubmitting || !formData.message || !formData.name}
+          isLoading={isSubmitting}
+          onClick={handleSubmit}
+        >
+          {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </form>
     </div>

@@ -5,8 +5,8 @@ import {
   NavbarContent,
   NavbarBrand,
   NavbarItem,
-  link as linkStyles,
-} from "@nextui-org/react";
+} from "@nextui-org/navbar";
+import { link as linkStyles } from "@nextui-org/react";
 import NextLink from "next/link";
 import clsx from "clsx";
 
@@ -41,8 +41,8 @@ export const Navbar = () => {
           ))}
         </ul>
       </NavbarContent>
-      <NavbarContent>
-        <ThemeSwitch />
+      <NavbarContent  justify="end">
+        <ThemeSwitch/>
       </NavbarContent>
     </NextUINavbar>
   );

@@ -33,7 +33,9 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head />
+      <head>
+        <title>1337 - Master the game, own the name!</title>
+      </head>
       <body
         className={clsx(
           "min-h-screen bg-background font-sans antialiased",

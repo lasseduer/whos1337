@@ -8,7 +8,7 @@ import {
   TableColumn,
   TableRow,
   TableCell,
-} from "@nextui-org/react";
+} from "@nextui-org/table";
 
 import { PostDto } from "@/app/models/dtos";
 
@@ -29,9 +29,10 @@ export const Posts = () => {
   return (
     <Table aria-label="Table of posts">
       <TableHeader>
-        <TableColumn>NAME</TableColumn>
-        <TableColumn>MESSAGE</TableColumn>
-        <TableColumn>TIMESTAMP</TableColumn>
+        <TableColumn>Name</TableColumn>
+        <TableColumn>Message</TableColumn>
+        <TableColumn>Timestamp</TableColumn>
+        <TableColumn>Origin</TableColumn>
       </TableHeader>
       <TableBody>
         {posts.map((post: PostDto) => {
@@ -40,6 +41,7 @@ export const Posts = () => {
               <TableCell>{post.name}</TableCell>
               <TableCell>{post.message}</TableCell>
               <TableCell>{post.timestamp}</TableCell>
+              <TableCell>{post.timeZone}</TableCell>
             </TableRow>
           );
         })}

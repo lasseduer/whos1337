@@ -1,0 +1,7 @@
+CREATE TABLE events (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    message VARCHAR(255),
+    timestamp TIMESTAMPTZ,
+    timezone VARCHAR(50)
+);
