@@ -9,6 +9,7 @@
 		"lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
 	},
 	"dependencies": {
+		"@auth0/nextjs-auth0": "^3.5.0",
 		"@nextui-org/button": "^2.0.38",
 		"@nextui-org/input": "^2.2.5",
 		"@nextui-org/link": "^2.0.35",
@@ -32,7 +33,7 @@
 	},
 	"devDependencies": {
 		"@next/eslint-plugin-next": "^14.2.13",
-		"@types/node": "20.5.7",
+		"@types/node": "^20.5.7",
 		"@types/react": "18.3.3",
 		"@types/react-dom": "18.3.0",
 		"@typescript-eslint/eslint-plugin": "7.2.0",

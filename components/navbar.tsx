@@ -6,7 +6,8 @@ import {
   NavbarBrand,
   NavbarItem,
 } from "@nextui-org/navbar";
-import { link as linkStyles } from "@nextui-org/react";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { Button, link as linkStyles } from "@nextui-org/react";
 import NextLink from "next/link";
 import clsx from "clsx";
 
@@ -15,6 +16,8 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";
 
 export const Navbar = () => {
+  const { user } = useUser();
+
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-full" justify="start">
@@ -41,8 +44,26 @@ export const Navbar = () => {
           ))}
         </ul>
       </NavbarContent>
-      <NavbarContent  justify="end">
-        <ThemeSwitch/>
+      <NavbarContent justify="end">
+        <ThemeSwitch />
+        {user ? (
+          <>
+            <p>Welcome, {user.name}</p>
+            <Button
+              color="secondary"
+              onClick={() => (window.location.href = "/api/auth/logout")}
+            >
+              Logout
+            </Button>
+          </>
+        ) : (
+          <Button
+            color="secondary"
+            onClick={() => (window.location.href = "/api/auth/login")}
+          >
+            Login
+          </Button>
+        )}
       </NavbarContent>
     </NextUINavbar>
   );
