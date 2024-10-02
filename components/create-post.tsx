@@ -2,8 +2,8 @@
 
 import { useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import {Spacer} from "@nextui-org/spacer";
-import {Button } from "@nextui-org/button";
+import { Spacer } from "@nextui-org/spacer";
+import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { format } from "date-fns";
 
@@ -11,7 +11,6 @@ import { NewPostDto } from "@/app/models/dtos";
 import { getLocalTimezoneOffset } from "@/app/utils";
 
 interface FormData {
-  name: string;
   message: string;
 }
 
@@ -19,7 +18,6 @@ export const CreatePost: React.FC = () => {
   const router = useRouter();
   // State to hold form inputs with typed data
   const [formData, setFormData] = useState<FormData>({
-    name: "",
     message: "",
   });
 
@@ -43,7 +41,6 @@ export const CreatePost: React.FC = () => {
 
     const requestBody: NewPostDto = {
       message: formData.message,
-      name: formData.name,
       timestamp: `${format(postCreated, "yyyy-MM-dd HH:mm:ss.SSS")}${getLocalTimezoneOffset()}`,
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
@@ -70,14 +67,6 @@ export const CreatePost: React.FC = () => {
   return (
     <div>
       <form>
-        <Input
-          fullWidth
-          required
-          label="Name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-        />
         <Spacer y={1.5} /> {/* Adds space between form elements */}
         <Input
           fullWidth
@@ -91,7 +80,7 @@ export const CreatePost: React.FC = () => {
         <Spacer y={1.5} />
         <Button
           color="primary"
-          disabled={isSubmitting || !formData.message || !formData.name}
+          disabled={isSubmitting || !formData.message}
           isLoading={isSubmitting}
           onClick={handleSubmit}
         >

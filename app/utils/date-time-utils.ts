@@ -1,4 +1,8 @@
+import { differenceInMilliseconds, set } from "date-fns";
+
 import { TimezoneOffset } from "../models";
+
+export const MILLISECONDS_IN_MINUTE = 60000;
 
 function getTimeZones(): TimezoneOffset[] {
   return [
@@ -74,4 +78,21 @@ export function getNextTimeZoneFor1337(): string {
   }
 
   return nextTimeZone.label;
+}
+
+export function getMillisecondsAfter1337(timestamp: string): number | undefined {
+  const date = new Date(timestamp);
+
+  if (date.getHours() !== 13 || date.getMinutes() !== 37) {
+    return undefined;
+  }
+
+  const referenceDate = set(date, {
+    seconds: 0,
+    milliseconds: 0,
+  });
+
+  const msDelta = differenceInMilliseconds(date, referenceDate);
+
+  return msDelta;
 }

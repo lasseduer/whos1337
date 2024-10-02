@@ -1,7 +1,17 @@
-CREATE TABLE events (
+CREATE TABLE eventsdev (
     id SERIAL PRIMARY KEY,
+    userid INT REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(100),
     message VARCHAR(255),
     timestamp TIMESTAMPTZ,
     timezone VARCHAR(50)
+);
+
+CREATE TABLE usersdev (
+    id SERIAL PRIMARY KEY,
+    userid VARCHAR(255)  UNIQUE NOT NULL,
+    nickname VARCHAR(255),
+    points FLOAT8 DEFAULT 0,
+    created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
