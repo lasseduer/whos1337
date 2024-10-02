@@ -12,7 +12,7 @@ import { generateName } from "@/app/utils";
 const upsertUser = async (user: Claims): Promise<string> => {
   try {
     const upsertedUser = await sql`
-        INSERT INTO usersdev (
+        INSERT INTO users (
           userid,
           nickname
         ) VALUES (

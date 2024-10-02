@@ -1,4 +1,4 @@
-CREATE TABLE eventsdev (
+CREATE TABLE events (
     id SERIAL PRIMARY KEY,
     userid INT REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(100),
@@ -7,7 +7,7 @@ CREATE TABLE eventsdev (
     timezone VARCHAR(50)
 );
 
-CREATE TABLE usersdev (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     userid VARCHAR(255)  UNIQUE NOT NULL,
     nickname VARCHAR(255),
