@@ -13,12 +13,12 @@ import {
 import { PostDto } from "@/app/models/dtos";
 
 export const Posts = () => {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<PostDto[]>([]);
 
   useEffect(() => {
     fetch("api/post")
       .then((response) => response.json())
-      .then((postDtos) => {
+      .then((postDtos: PostDto[]) => {
         setPosts(postDtos);
       })
       .catch((error) => {
