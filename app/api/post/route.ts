@@ -13,12 +13,12 @@ import { NewPostDto, PostDto } from "./../../models/dtos";
 export async function GET(_: NextRequest) {
   const { rows } = await sql`
       SELECT 
-        usersdev.nickname,
-        eventsdev.message,
-        TO_CHAR(eventsdev.timestamp AT TIME ZONE timezone, 'YYYY-MM-DD HH24:MI:SS.MS') AS timestamp,
-        eventsdev.timezone
-      FROM eventsdev
-      LEFT JOIN usersdev ON usersdev.id = eventsdev.userid;`;
+        users.nickname,
+        events.message,
+        TO_CHAR(events.timestamp AT TIME ZONE timezone, 'YYYY-MM-DD HH24:MI:SS.MS') AS timestamp,
+        events.timezone
+      FROM events
+      LEFT JOIN users ON users.id = events.userid;`;
   const postDto = rows.map(
     (row, index) =>
       ({
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     await dbClient.query("BEGIN");
 
     await dbClient.query(`
-      INSERT INTO eventsdev (
+      INSERT INTO events (
         message, 
         timestamp, 
         timezone, 
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
         '${post.timeZone}', 
         (
           SELECT id 
-          FROM usersdev 
+          FROM users 
           WHERE userid = '${userid}'
         )
       );
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         (getMillisecondsAfter1337(post.timestamp) ?? MILLISECONDS_IN_MINUTE);
 
       await dbClient.query(`
-      UPDATE usersdev
+      UPDATE users
       SET points = points + ${points}
       WHERE userid = '${userid}';
     `);
