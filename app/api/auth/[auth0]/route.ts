@@ -9,10 +9,9 @@ import { NextRequest } from "next/server";
 
 import { generateName } from "@/app/utils";
 
-const upsertUser = async (user: Claims): Promise<void> => {
-  if (user) {
-    try {
-      await sql`
+const upsertUser = async (user: Claims): Promise<string> => {
+  try {
+    const upsertedUser = await sql`
         INSERT INTO usersdev (
           userid,
           nickname
@@ -22,17 +21,22 @@ const upsertUser = async (user: Claims): Promise<void> => {
         ) 
         ON CONFLICT (userid)
         DO UPDATE SET updated = NOW()
+        RETURNING nickname;
       `;
-    } catch (error) {
-      console.error("Error saving user:", error);
-      // Log the error but don't throw to prevent login failure
-    }
+
+    return upsertedUser.rows[0].nickname;
+  } catch (error) {
+    throw new Error("Failed to upsert user");
   }
 };
 
 const afterCallback = async (_: NextRequest, session: Session) => {
-  await upsertUser(session.user);
-  
+  if (session.user) {
+    const userNickname = await upsertUser(session.user);
+    
+    session.user.nickname = userNickname;
+  }
+
   return session;
 };
 

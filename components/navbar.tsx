@@ -48,7 +48,7 @@ export const Navbar = () => {
         <ThemeSwitch />
         {user ? (
           <>
-            <p>Welcome, {user.name}</p>
+            <p>Welcome, {user.nickname}</p>
             <Button
               color="secondary"
               onClick={() => (window.location.href = "/api/auth/logout")}
