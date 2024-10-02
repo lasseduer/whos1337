@@ -1,8 +1,12 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
-import { sql } from "@vercel/postgres";
+import { sql, db } from "@vercel/postgres";
 
-import { generateName } from "@/app/utils";
+import {
+  generateName,
+  getMillisecondsAfter1337,
+  MILLISECONDS_IN_MINUTE,
+} from "@/app/utils";
 
 import { NewPostDto, PostDto } from "./../../models/dtos";
 
@@ -34,26 +38,46 @@ export async function POST(req: NextRequest) {
   const session = await getSession();
   const userid = session?.user?.sub ?? "";
 
+  const dbClient = await db.connect();
+
   try {
-    if (!post) throw new Error("Post is required");
-    await sql`
+    if (!post) {
+      throw new Error("Post is required");
+    }
+
+    await dbClient.query("BEGIN");
+
+    await dbClient.query(`
       INSERT INTO eventsdev (
         message, 
         timestamp, 
         timezone, 
         userid
       ) VALUES (
-        ${post.message}, 
-        ${post.timestamp}, 
-        ${post.timeZone}, 
+        '${post.message}', 
+        '${post.timestamp}', 
+        '${post.timeZone}', 
         (
           SELECT id 
           FROM usersdev 
-          WHERE userid = ${userid}
+          WHERE userid = '${userid}'
         )
-      );`;
-  } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+      );
+    `);
+    if (userid) {
+      const points =
+        MILLISECONDS_IN_MINUTE -
+        (getMillisecondsAfter1337(post.timestamp) ?? MILLISECONDS_IN_MINUTE);
+
+      await dbClient.query(`
+      UPDATE usersdev
+      SET points = points + ${points}
+      WHERE userid = '${userid}';
+    `);
+    }
+    await dbClient.query("COMMIT");
+  } finally {
+    dbClient.release();
   }
 
   return NextResponse.json({
