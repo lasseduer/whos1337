@@ -13,7 +13,7 @@ import { NewPostDto, PostDto } from "./../../models/dtos";
 export async function GET(_: NextRequest) {
   const result: PostDto[] = [];
   const dbClient = getDbClient();
-  
+
   await dbClient.connect();
   try {
     const { rows } = await dbClient.query(`
@@ -25,17 +25,19 @@ export async function GET(_: NextRequest) {
       FROM events
       LEFT JOIN users ON users.id = events.userid;
     `);
-    
-    result.push(...rows.map(
-      (row, index) =>
-        ({
-          id: index,
-          message: row.message,
-          name: `${row.nickname ?? "Anonymous User - " + generateName()}`,
-          timestamp: row.timestamp,
-          timeZone: row.timezone,
-        }) as PostDto
-    ));
+
+    result.push(
+      ...rows.map(
+        (row: any, index: number) =>
+          ({
+            id: index,
+            message: row.message,
+            name: `${row.nickname ?? "Anonymous User - " + generateName()}`,
+            timestamp: row.timestamp,
+            timeZone: row.timezone,
+          }) as PostDto
+      )
+    );
   } finally {
     dbClient.end();
   }
