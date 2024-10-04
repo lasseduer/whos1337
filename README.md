@@ -1,53 +1,72 @@
-# Next.js & NextUI Template
+# Whos1337
 
-This is a template for creating applications using Next.js 14 (app directory) and NextUI (v2).
+## Local setup
 
-[Try it on CodeSandbox](https://githubbox.com/nextui-org/next-app-template)
+### DB setup
 
-## Technologies Used
+You need to setup the environment variables for the application to access the db. Create a file called `.env.development.local` and add the following variables:
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [NextUI v2](https://nextui.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes) 
-
-## How to Use 
-
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/nextui-org/next-app-template
+``` txt
+POSTGRES_URL="postgres://postgres:mysecretpassword@localhost:54320/mydb"
 ```
 
-### Install dependencies
+### Authentication setup
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+You need to setup the environment variables for the Auth0 authentication. Create a file called `.env.development.local` and add the following variables:
 
-```bash
-npm install
+``` txt
+AUTH0_SECRET="some-secret"
+AUTH0_BASE_URL="http://localhost:3000"
+AUTH0_ISSUER_BASE_URL="https://your-domain.eu.auth0.com"
+AUTH0_CLIENT_ID="some-client-id"
+AUTH0_CLIENT_SECRET="some-client-secret"
 ```
 
-### Run the development server
+### Running the application
 
-```bash
-npm run dev
+First start by running the local `PostgreSQL` and `pgAdmin4` by running:
+
+``` shell
+$ docker-compose up -d
 ```
 
-### Setup pnpm (optional)
+This will host `pgAdmin4` on [localhost:8080](http://localhost:8080) and `PostgreSQL` on [localhost:54320](http://localhost:54320).
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+Start by installing all dependencies:
 
-```bash
-public-hoist-pattern[]=*@nextui-org/*
+```shell
+$ npm install
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+Now run the database startup script:
 
-## License
+``` bash
+$ node config/db-setup.js
+```
 
-Licensed under the [MIT license](https://github.com/nextui-org/next-app-template/blob/main/LICENSE).
+This will ensure that all tables are setup correctly.
+
+and the running the application
+
+```shell
+$ npm run dev
+```
+
+The application will be hosted on [localhost:3000](http://localhost:3000).
+
+### Database UI
+
+If you want to open `pgAdmin4` first go to [localhost:8080](http://localhost:8080). Then login with the following credentials:
+
+- username: `admin@example.com`
+- password: `admin`
+
+To connect click the `Add New Server` and fill out the form:
+
+- Name: `Docker PostgreSQL`
+- Host name/address: `postgres`
+- Port: `5432`
+- Username: `postgres`
+- Password: `mysecretpassword`
+
+and click Save.
