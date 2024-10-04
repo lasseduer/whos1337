@@ -10,13 +10,26 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import { Button, link as linkStyles } from "@nextui-org/react";
 import NextLink from "next/link";
 import clsx from "clsx";
-
+import { User, useSharedContext } from "@/app/store";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";
+import { useEffect } from "react";
 
 export const Navbar = () => {
   const { user } = useUser();
+  const store = useSharedContext();
+
+  useEffect(() => {
+    if (user) {
+      const storeUser: User = {
+        nickname: user.nickname ?? "",
+        points: `${user.points}`,
+      };
+      
+      store.setUser(storeUser);
+    }
+  }, [user]);
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
@@ -49,6 +62,7 @@ export const Navbar = () => {
         {user ? (
           <>
             <p>Welcome, {user.nickname}</p>
+            <p>{store.user?.points}pts</p>
             <Button
               color="secondary"
               onClick={() => (window.location.href = "/api/auth/logout")}

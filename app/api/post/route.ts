@@ -8,7 +8,11 @@ import {
   MILLISECONDS_IN_MINUTE,
 } from "@/app/utils";
 
-import { NewPostDto, PostDto } from "./../../models/dtos";
+import {
+  CreatePostResponseDto,
+  NewPostDto,
+  PostDto,
+} from "./../../models/dtos";
 
 export async function GET(_: NextRequest) {
   const result: PostDto[] = [];
@@ -50,6 +54,10 @@ export async function POST(req: NextRequest) {
   const session = await getSession();
   const userid = session?.user?.sub ?? "";
   const dbClient = getDbClient();
+  const result: CreatePostResponseDto = {
+    points: null,
+    pointsInTotal: null,
+  };
 
   await dbClient.connect();
   try {
@@ -76,23 +84,27 @@ export async function POST(req: NextRequest) {
         )
       );
     `);
-    if (userid) {
-      const points =
-        MILLISECONDS_IN_MINUTE -
-        (getMillisecondsAfter1337(post.timestamp) ?? MILLISECONDS_IN_MINUTE);
+    const points =
+      MILLISECONDS_IN_MINUTE -
+      (getMillisecondsAfter1337(post.timestamp) ?? MILLISECONDS_IN_MINUTE);
 
-      await dbClient.query(`
-      UPDATE users
-      SET points = points + ${points}
-      WHERE userid = '${userid}';
-    `);
+    result.points = `${points}`;
+
+    if (userid) {
+      const { rows } = await dbClient.query(`
+        UPDATE users
+        SET points = points + ${points}
+        WHERE userid = '${userid}'
+        RETURNING points;
+        `);
+
+      result.pointsInTotal = `${rows[0].points}`;
     }
+
     await dbClient.query("COMMIT");
   } finally {
     dbClient.end();
   }
 
-  return NextResponse.json({
-    message: "POST successfully. Thank you for posting",
-  });
+  return NextResponse.json(result);
 }
