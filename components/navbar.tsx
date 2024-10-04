@@ -7,7 +7,15 @@ import {
   NavbarItem,
 } from "@nextui-org/navbar";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { Button, link as linkStyles } from "@nextui-org/react";
+import {
+  Avatar,
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  link as linkStyles,
+} from "@nextui-org/react";
 import NextLink from "next/link";
 import clsx from "clsx";
 import { User, useSharedContext } from "@/app/store";
@@ -26,8 +34,10 @@ export const Navbar = () => {
         nickname: user.nickname ?? "",
         points: `${user.points}`,
       };
-      
+
       store.setUser(storeUser);
+    } else {
+      store.setUser(null);
     }
   }, [user]);
 
@@ -57,28 +67,50 @@ export const Navbar = () => {
           ))}
         </ul>
       </NavbarContent>
-      <NavbarContent justify="end">
-        <ThemeSwitch />
-        {user ? (
-          <>
-            <p>Welcome, {user.nickname}</p>
-            <p>{store.user?.points}pts</p>
-            <Button
-              color="secondary"
-              onClick={() => (window.location.href = "/api/auth/logout")}
-            >
-              Logout
-            </Button>
-          </>
-        ) : (
-          <Button
-            color="secondary"
-            onClick={() => (window.location.href = "/api/auth/login")}
-          >
-            Login
-          </Button>
-        )}
-      </NavbarContent>
+      {
+        <NavbarContent as="div" justify="end">
+          <ThemeSwitch />
+          {user ? (
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <Avatar
+                  isBordered
+                  as="button"
+                  className="transition-transform"
+                  color="secondary"
+                  name={user.nickname ?? ""}
+                  size="sm"
+                  src={user.picture ?? ""}
+                />
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Profile Actions" variant="flat">
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-semibold">{user.nickname}</p>
+                </DropdownItem>
+                <DropdownItem key="points">
+                  {store.user?.points} points
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  color="danger"
+                  onClick={() => (window.location.href = "/api/auth/logout")}
+                >
+                  Log Out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          ) : (
+            <>
+              <Button
+                color="secondary"
+                onClick={() => (window.location.href = "/api/auth/login")}
+              >
+                Login
+              </Button>
+            </>
+          )}
+        </NavbarContent>
+      }
     </NextUINavbar>
   );
 };
