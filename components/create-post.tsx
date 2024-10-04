@@ -6,15 +6,19 @@ import { Spacer } from "@nextui-org/spacer";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { format } from "date-fns";
-
-import { NewPostDto } from "@/app/models/dtos";
+import { User, useSharedContext } from "@/app/store";
+import { CreatePostResponseDto, NewPostDto } from "@/app/models/dtos";
 import { getLocalTimezoneOffset } from "@/app/utils";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface FormData {
   message: string;
 }
 
 export const CreatePost: React.FC = () => {
+  const store = useSharedContext();
+  const { user } = useUser();
+
   const router = useRouter();
   // State to hold form inputs with typed data
   const [formData, setFormData] = useState<FormData>({
@@ -46,17 +50,24 @@ export const CreatePost: React.FC = () => {
     };
 
     try {
-      const response = await fetch("api/post", {
+      await fetch("api/post", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody), // Convert form data to JSON
-      });
+      })
+        .then((response) => response.json())
+        .then((response: CreatePostResponseDto) => {
+          if (user) {
+            const newUser = {
+              ...store.user,
+              points: response.pointsInTotal,
+            } as User;
 
-      if (!response.ok) {
-        throw new Error("Failed to submit form");
-      }
+            store.setUser(newUser);
+          }
+        });
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error submitting the form:", error);

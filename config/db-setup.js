@@ -2,7 +2,7 @@ const { Client } = require("pg");
 
 async function setupDB() {
     const dbClient = new Client({
-        connectionString: process.env.POSTGRES_URL
+        connectionString: "postgres://postgres:mysecretpassword@localhost:54320/mydb"
     });   
 
     await dbClient.connect();

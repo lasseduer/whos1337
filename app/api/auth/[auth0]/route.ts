@@ -8,7 +8,9 @@ import { NextRequest } from "next/server";
 import { generateName } from "@/app/utils";
 import { getDbClient } from "../../utils";
 
-const upsertUser = async (user: Claims): Promise<string> => {
+const upsertUser = async (
+  user: Claims
+): Promise<{ nickname: string; points: number }> => {
   const dbClient = getDbClient();
 
   await dbClient.connect();
@@ -23,10 +25,10 @@ const upsertUser = async (user: Claims): Promise<string> => {
       ) 
       ON CONFLICT (userid)
       DO UPDATE SET updated = NOW()
-      RETURNING nickname;
+      RETURNING nickname, points;
     `);
 
-    return rows[0].nickname;
+    return { nickname: rows[0].nickname, points: rows[0].points };
   } finally {
     dbClient.end();
   }
@@ -34,9 +36,10 @@ const upsertUser = async (user: Claims): Promise<string> => {
 
 const afterCallback = async (_: NextRequest, session: Session) => {
   if (session.user) {
-    const userNickname = await upsertUser(session.user);
+    const { nickname, points } = await upsertUser(session.user);
 
-    session.user.nickname = userNickname;
+    session.user.nickname = nickname;
+    session.user.points = points;
   }
 
   return session;
