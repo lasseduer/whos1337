@@ -1,9 +1,7 @@
 "use client";
 import { CSSProperties, useEffect, useState } from "react";
-
 import { CreatePost } from "@/components/create-post";
 import { title } from "@/components/primitives";
-
 import { getLocalOffsetTimeZone, getNextTimeZoneFor1337 } from "./utils";
 
 export default function Home() {

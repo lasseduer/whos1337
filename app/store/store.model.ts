@@ -5,5 +5,5 @@ export interface User {
 
 export interface Store {
   user: User | null;
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
 }
