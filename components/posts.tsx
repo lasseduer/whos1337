@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -9,43 +9,108 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/table";
-
+import { format, isToday, isYesterday } from "date-fns";
+import { Button } from "@nextui-org/button";
 import { PostDto } from "@/app/models/dtos";
+import { Spinner } from "@nextui-org/spinner";
+
+interface Post {
+  id: number;
+  name: string;
+  message: string;
+  timestamp: string;
+  timeZone: string;
+}
 
 export const Posts = () => {
-  const [posts, setPosts] = useState<PostDto[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isFetchingPosts, setIsFetchingPosts] = React.useState(true);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const handleGoBackOneDay = () => {
+    const date = new Date(selectedDate);
+
+    date.setDate(date.getDate() - 1);
+    setSelectedDate(date);
+  };
+
+  const getDateLabel = () => {
+    if (isToday(selectedDate)) {
+      return "Today";
+    } else if (isYesterday(selectedDate)) {
+      return "Yesterday";
+    }
+    
+    return format(selectedDate, "MMMM do");
+  };
+
+  const handleGoForwardOneDay = () => {
+    const date = new Date(selectedDate);
+
+    date.setDate(date.getDate() + 1);
+    setSelectedDate(date);
+  };
 
   useEffect(() => {
-    fetch("api/post")
+    setIsFetchingPosts(true);
+    setPosts([]);
+    fetch(`api/post?date=${format(selectedDate, "yyyy-MM-dd")}`)
       .then((response) => response.json())
       .then((postDtos: PostDto[]) => {
-        setPosts(postDtos);
+        setPosts(
+          postDtos.map((dto: PostDto, index: number) => ({
+            id: index,
+            name: dto.name,
+            message: dto.message,
+            timestamp: dto.timestamp,
+            timeZone: dto.timeZone,
+          }))
+        );
       })
       .catch((error) => {
         console.error("Error fetching posts", error);
-      });
-  }, []);
+      })
+      .finally(() => setIsFetchingPosts(false));
+  }, [selectedDate]);
 
   return (
-    <Table aria-label="Table of posts">
-      <TableHeader>
-        <TableColumn>Name</TableColumn>
-        <TableColumn>Message</TableColumn>
-        <TableColumn>Timestamp</TableColumn>
-        <TableColumn>Origin</TableColumn>
-      </TableHeader>
-      <TableBody>
-        {posts.map((post: PostDto) => {
-          return (
-            <TableRow key={post.id}>
-              <TableCell>{post.name}</TableCell>
-              <TableCell>{post.message}</TableCell>
-              <TableCell>{post.timestamp}</TableCell>
-              <TableCell>{post.timeZone}</TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <>
+      <div className="flex justify-between w-full pb-[10px]">
+        <Button className="flex justify-start" onClick={handleGoBackOneDay}>
+          Back one day
+        </Button>
+        <span>{getDateLabel()}</span>
+        <Button
+          className="flex justify-end"
+          disabled={isToday(selectedDate)}
+          onClick={handleGoForwardOneDay}
+        >
+          Forward one day
+        </Button>
+      </div>
+      <Table aria-label="Table of posts">
+        <TableHeader>
+          <TableColumn>Name</TableColumn>
+          <TableColumn>Message</TableColumn>
+          <TableColumn>Timestamp</TableColumn>
+          <TableColumn>Origin</TableColumn>
+        </TableHeader>
+        <TableBody
+          isLoading={isFetchingPosts}
+          loadingContent={<Spinner label="Loading..." />}
+        >
+          {posts.map((post: Post) => {
+            return (
+              <TableRow key={post.id}>
+                <TableCell>{post.name}</TableCell>
+                <TableCell>{post.message}</TableCell>
+                <TableCell>{post.timestamp}</TableCell>
+                <TableCell>{post.timeZone}</TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </>
   );
 };

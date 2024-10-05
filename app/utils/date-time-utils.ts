@@ -1,6 +1,6 @@
 import { differenceInMilliseconds, set } from "date-fns";
 
-import { TimezoneOffset } from "../models";
+import { TimezoneOffset } from "@/app/models";
 
 export const MILLISECONDS_IN_MINUTE = 60000;
 
