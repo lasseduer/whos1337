@@ -13,6 +13,7 @@ import { format, isToday, isYesterday } from "date-fns";
 import { Button } from "@nextui-org/button";
 import { PostDto } from "@/app/models/dtos";
 import { Spinner } from "@nextui-org/spinner";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 interface Post {
   id: number;
@@ -76,7 +77,7 @@ export const Posts = () => {
   return (
     <>
       <div className="flex justify-between w-full pb-[10px]">
-        <Button className="flex justify-start" onClick={handleGoBackOneDay}>
+        <Button className="flex justify-start" onClick={handleGoBackOneDay} startContent={<FaArrowLeft/>}>
           Back one day
         </Button>
         <span>{getDateLabel()}</span>
@@ -84,6 +85,7 @@ export const Posts = () => {
           className="flex justify-end"
           disabled={isToday(selectedDate)}
           onClick={handleGoForwardOneDay}
+          endContent={<FaArrowRight/>}
         >
           Forward one day
         </Button>
