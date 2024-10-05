@@ -1,40 +1,45 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
 import { getDbClient } from "./../utils";
-
+import { isValid, parse } from "date-fns";
 import {
   generateName,
   getMillisecondsAfter1337,
   MILLISECONDS_IN_MINUTE,
 } from "@/app/utils";
+import { CreatePostResponseDto, NewPostDto, PostDto } from "@/app/models/dtos";
 
-import {
-  CreatePostResponseDto,
-  NewPostDto,
-  PostDto,
-} from "./../../models/dtos";
-
-export async function GET(_: NextRequest) {
+export async function GET(req: NextRequest) {
   const result: PostDto[] = [];
   const dbClient = getDbClient();
+
+  const { searchParams } = new URL(req.url);
+  let date = searchParams.get("date");
+
+  if (!date || !isValid(parse(date, "yyyy-MM-dd", new Date()))) {
+    date = "";
+  }
 
   await dbClient.connect();
   try {
     const { rows } = await dbClient.query(`
-      SELECT 
+      SELECT
+        events.id,
         users.nickname,
         events.message,
-        TO_CHAR(events.timestamp AT TIME ZONE timezone, 'YYYY-MM-DD HH24:MI:SS.MS') AS timestamp,
+        TO_CHAR(events.timestamp AT TIME ZONE timezone, 'HH24:MI:SS.MS') AS timestamp,
         events.timezone
       FROM events
-      LEFT JOIN users ON users.id = events.userid;
+      LEFT JOIN users ON users.id = events.userid
+      WHERE '${date}' = '' OR TO_CHAR(events.timestamp, 'YYYY-MM-DD') = '${date}'
+      ORDER BY events.timestamp DESC;
     `);
 
     result.push(
       ...rows.map(
-        (row: any, index: number) =>
+        (row: any) =>
           ({
-            id: index,
+            id: row.id,
             message: row.message,
             name: `${row.nickname ?? "Anonymous User - " + generateName()}`,
             timestamp: row.timestamp,
