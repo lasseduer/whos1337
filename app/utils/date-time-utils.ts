@@ -1,5 +1,4 @@
-import { differenceInMilliseconds, set } from "date-fns";
-
+import { DateTime } from "luxon";
 import { TimezoneOffset } from "@/app/models";
 
 export const MILLISECONDS_IN_MINUTE = 60000;
@@ -80,19 +79,17 @@ export function getNextTimeZoneFor1337(): string {
   return nextTimeZone.label;
 }
 
-export function getMillisecondsAfter1337(timestamp: string): number | undefined {
-  const date = new Date(timestamp);
+export function getMillisecondsAfter1337(
+  timestamp: string
+): number | undefined {
+  const format = "yyyy-MM-dd HH:mm:ss.SSSZZ";
+  const date = DateTime.fromFormat(timestamp, format, { setZone: true });
 
-  if (date.getHours() !== 13 || date.getMinutes() !== 37) {
+  if (date.hour !== 13 || date.minute !== 37) {
     return undefined;
   }
 
-  const referenceDate = set(date, {
-    seconds: 0,
-    milliseconds: 0,
-  });
-
-  const msDelta = differenceInMilliseconds(date, referenceDate);
+  const msDelta = date.second * 1000 + date.millisecond;
 
   return msDelta;
 }
