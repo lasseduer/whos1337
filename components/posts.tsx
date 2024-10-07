@@ -77,15 +77,15 @@ export const Posts = () => {
   return (
     <>
       <div className="flex justify-between w-full pb-[10px]">
-        <Button className="flex justify-start" onClick={handleGoBackOneDay} startContent={<FaArrowLeft/>}>
+        <Button className="flex justify-start" startContent={<FaArrowLeft/>} onClick={handleGoBackOneDay}>
           Back one day
         </Button>
         <span>{getDateLabel()}</span>
         <Button
           className="flex justify-end"
           disabled={isToday(selectedDate)}
-          onClick={handleGoForwardOneDay}
           endContent={<FaArrowRight/>}
+          onClick={handleGoForwardOneDay}
         >
           Forward one day
         </Button>
