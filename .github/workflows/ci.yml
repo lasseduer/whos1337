@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "./**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "./**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Test and Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: 20.15.0
+
+      - name: npm ci
+        run: npm ci
+
+      # - name: npm run test
+      #   run: npm run test
+
+      - name: npm run build
+        run: npm run build
