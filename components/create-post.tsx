@@ -55,9 +55,19 @@ export const CreatePost: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestBody), // Convert form data to JSON
+        body: JSON.stringify(requestBody),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            if (response.status === 429) {
+              throw new Error(
+                "You are only allowed to post once every 1337 seconds."
+              );
+            }
+          }
+
+          return response.json();
+        })
         .then((response: CreatePostResponseDto) => {
           if (user) {
             const newUser = {
@@ -68,11 +78,11 @@ export const CreatePost: React.FC = () => {
             store.setUser(newUser);
           }
         });
+      router.push("/whos1337");
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error submitting the form:", error);
     }
-    router.push("/whos1337");
   };
 
   return (
