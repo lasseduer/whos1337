@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDbClient, getUserById, updateUser } from "../utils";
-import { UserDto } from "@/app/models/dtos/user-dto";
+import { UserDto } from "@/app/models/dtos/user-dto.model";
 import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { DbUserWrite } from "../models";
 
@@ -23,6 +23,7 @@ export const GET = withApiAuthRequired(async (_: NextRequest) => {
 
     result = {
       nickname: user.nickname,
+      points: user.points,
     };
   } finally {
     dbClient.end();
@@ -31,7 +32,7 @@ export const GET = withApiAuthRequired(async (_: NextRequest) => {
   return NextResponse.json(result);
 });
 
-export const POST = withApiAuthRequired(async (res: NextRequest) => {
+export const PUT = withApiAuthRequired(async (res: NextRequest) => {
   let result: UserDto | undefined = undefined;
   const session = await getSession();
 
@@ -61,6 +62,7 @@ export const POST = withApiAuthRequired(async (res: NextRequest) => {
     }
     result = {
       nickname: updatedUser.nickname,
+      points: updatedUser.points,
     };
   } finally {
     dbClient.end();

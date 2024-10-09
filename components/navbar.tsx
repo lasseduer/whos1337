@@ -23,6 +23,7 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";
 import { useEffect } from "react";
+import { UserDto } from "@/app/models/dtos";
 
 export const Navbar = () => {
   const { user } = useUser();
@@ -30,12 +31,25 @@ export const Navbar = () => {
 
   useEffect(() => {
     if (user) {
-      const storeUser: User = {
-        nickname: user.nickname ?? "",
-        points: `${user.points}`,
+      const fetchUser = async () => {
+        await fetch("api/user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((userDto: UserDto) => {
+            const storeUser: User = {
+              nickname: userDto.nickname ?? "",
+              points: `${userDto.points}`,
+            };
+
+            store.setUser(storeUser);
+          });
       };
 
-      store.setUser(storeUser);
+      fetchUser();
     } else {
       store.setUser(null);
     }
@@ -78,14 +92,17 @@ export const Navbar = () => {
                   as="button"
                   className="transition-transform"
                   color="secondary"
-                  name={user.nickname ?? ""}
+                  name={store.user?.nickname ?? ""}
                   size="sm"
-                  src={user.picture ?? ""}
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="Profile Actions" variant="flat">
-                <DropdownItem key="profile" className="h-14 gap-2">
-                  <p className="font-semibold">{user.nickname}</p>
+                <DropdownItem
+                  key="profile"
+                  className="h-14 gap-2"
+                  onClick={() => (window.location.href = "/profile")}
+                >
+                  <p className="font-semibold">{store.user?.nickname}</p>
                 </DropdownItem>
                 <DropdownItem key="points">
                   {store.user?.points} points

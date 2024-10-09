@@ -1,28 +1,22 @@
 "use client";
-
-import { useState, ChangeEvent } from "react";
-import { useRouter } from "next/navigation";
-import { Spacer } from "@nextui-org/spacer";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
-import { format } from "date-fns";
-import { User, useSharedContext } from "@/app/store";
-import { CreatePostResponseDto, NewPostDto } from "@/app/models/dtos";
-import { getLocalTimezoneOffset } from "@/app/utils";
-import { useUser } from "@auth0/nextjs-auth0/client";
+import { title } from "@/components/primitives";
+import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0/client";
+import { Button, Input, Spacer } from "@nextui-org/react";
+import { ChangeEvent, useState } from "react";
+import { useSharedContext, User } from "../store";
+import { UserDto } from "../models/dtos";
 
 interface FormData {
-  message: string;
+  nickname: string;
 }
 
-export const CreatePost: React.FC = () => {
+export const Profile = (): any => {
   const store = useSharedContext();
   const { user } = useUser();
 
-  const router = useRouter();
   // State to hold form inputs with typed data
   const [formData, setFormData] = useState<FormData>({
-    message: "",
+    nickname: "",
   });
 
   // State to track submission status
@@ -38,20 +32,17 @@ export const CreatePost: React.FC = () => {
   };
 
   const handleSubmit = async (e: any) => {
-    const postCreated = new Date();
-
     e.preventDefault(); // Prevent page reload on form submit
     setIsSubmitting(true);
 
-    const requestBody: NewPostDto = {
-      message: formData.message,
-      timestamp: `${format(postCreated, "yyyy-MM-dd HH:mm:ss.SSS")}${getLocalTimezoneOffset()}`,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    const requestBody: UserDto = {
+      nickname: formData.nickname,
+      points: undefined,
     };
 
     try {
-      await fetch("api/post", {
-        method: "POST",
+      await fetch("api/user", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -59,29 +50,22 @@ export const CreatePost: React.FC = () => {
       })
         .then((response) => {
           if (!response.ok) {
-            if (response.status === 429) {
-              store.addError(
-                "You are only allowed to post once every 1337 seconds."
-              );
-              throw new Error(
-                "You are only allowed to post once every 1337 seconds."
-              );
-            }
+            throw new Error("Something went wrong");
           }
 
           return response.json();
         })
-        .then((response: CreatePostResponseDto) => {
+        .then((response: UserDto) => {
           if (user) {
             const newUser = {
               ...store.user,
-              points: response.pointsInTotal,
+              nickname: response.nickname,
             } as User;
 
             store.setUser(newUser);
+            setFormData({ nickname: "" });
           }
         });
-      router.push("/whos1337");
     } catch (error) {
       console.error(error);
     } finally {
@@ -90,28 +74,32 @@ export const CreatePost: React.FC = () => {
   };
 
   return (
-    <div>
+    <>
+      <div className="flex justify-center pb-[30px]">
+        <h1 className={title()}>{store.user?.nickname}</h1>
+      </div>
       <form>
         <Spacer y={1.5} /> {/* Adds space between form elements */}
         <Input
           fullWidth
           required
-          label="Message"
-          name="message"
-          type="email"
-          value={formData.message}
+          label="Change your nickname"
+          name="nickname"
+          type="text"
+          value={formData.nickname}
           onChange={handleChange}
         />
         <Spacer y={1.5} />
         <Button
           color="primary"
-          disabled={isSubmitting || !formData.message}
+          disabled={isSubmitting || !formData.nickname}
           isLoading={isSubmitting}
           onClick={handleSubmit}
         >
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </form>
-    </div>
+    </>
   );
 };
+export default withPageAuthRequired(Profile);
