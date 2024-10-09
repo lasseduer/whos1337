@@ -1,13 +1,10 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
-import { getDbClient } from "./../utils";
-import { isValid, parse } from "date-fns";
-import {
-  generateName,
-  getMillisecondsAfter1337,
-  MILLISECONDS_IN_MINUTE,
-} from "@/app/utils";
+import { createPost, getDbClient, getLatestPostByUserId } from "./../utils";
+import { isValid, parse, differenceInMilliseconds } from "date-fns";
+import { generateName } from "@/app/utils";
 import { CreatePostResponseDto, NewPostDto, PostDto } from "@/app/models/dtos";
+import { DbPostWrite } from "../models";
 
 export async function GET(req: NextRequest) {
   const result: PostDto[] = [];
@@ -57,56 +54,49 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const post: NewPostDto = await req.json();
   const session = await getSession();
-  const userid = session?.user?.sub ?? "";
-  const dbClient = getDbClient();
+  const userId = session?.user?.sub ?? "";
   const result: CreatePostResponseDto = {
     points: null,
     pointsInTotal: null,
   };
 
+  if (!post) {
+    throw new Error("Post is required");
+  }
+  const dbClient = getDbClient();
+
   await dbClient.connect();
   try {
-    if (!post) {
-      throw new Error("Post is required");
+    let allowPost = true;
+
+    if (userId) {
+      const latestPost = await getLatestPostByUserId(dbClient, userId);
+
+      if (latestPost) {
+        const postTime = new Date(post.timestamp);
+        const lastPostTime = new Date(latestPost.timestamp);
+
+        allowPost = differenceInMilliseconds(postTime, lastPostTime) > 1337000;
+      }
     }
 
-    await dbClient.query("BEGIN");
-
-    await dbClient.query(`
-      INSERT INTO events (
-        message, 
-        timestamp, 
-        timezone, 
-        userid
-      ) VALUES (
-        '${post.message}', 
-        '${post.timestamp}', 
-        '${post.timeZone}', 
-        (
-          SELECT id 
-          FROM users 
-          WHERE userid = '${userid}'
-        )
+    if (!allowPost) {
+      return NextResponse.json(
+        "You are only allowed to post once every 5 minutes to avoid spamming for points",
+        { status: 429 }
       );
-    `);
-    const points =
-      MILLISECONDS_IN_MINUTE -
-      (getMillisecondsAfter1337(post.timestamp) ?? MILLISECONDS_IN_MINUTE);
-
-    result.points = `${points}`;
-
-    if (userid) {
-      const { rows } = await dbClient.query(`
-        UPDATE users
-        SET points = points + ${points}
-        WHERE userid = '${userid}'
-        RETURNING points;
-        `);
-
-      result.pointsInTotal = `${rows[0].points}`;
     }
 
-    await dbClient.query("COMMIT");
+    const newPost: DbPostWrite = {
+      userId: userId,
+      message: post.message,
+      timestamp: post.timestamp,
+      timezone: post.timeZone,
+    };
+    const { points, pointsInTotal } = await createPost(dbClient, newPost);
+
+    result.points = points;
+    result.pointsInTotal = pointsInTotal;
   } finally {
     dbClient.end();
   }

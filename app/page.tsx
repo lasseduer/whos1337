@@ -3,8 +3,12 @@ import { CSSProperties, useEffect, useState } from "react";
 import { CreatePost } from "@/components/create-post";
 import { title } from "@/components/primitives";
 import { getLocalOffsetTimeZone, getNextTimeZoneFor1337 } from "./utils";
+import { useSharedContext } from "./store";
+import { Flip, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
+  const store = useSharedContext();
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isTimezoneVisible, setIsTimezoneVisible] = useState<boolean>(false);
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
@@ -19,6 +23,23 @@ export default function Home() {
 
     return `${getLocalOffsetTimeZone().label === nextTimeZone ? "Your timezone" : nextTimeZone} is up next!`;
   };
+
+  useEffect(() => {
+    store.errors.forEach((error) => {
+      toast.error(error.message, {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: false,
+        progress: 1,
+        theme: "dark",
+        transition: Flip,
+      });
+      store.removeError(error.id);
+    });
+  }, [store.errors]);
 
   useEffect(() => {
     // Start fading out after 5 seconds
@@ -61,6 +82,7 @@ export default function Home() {
           <CreatePost />
         </div>
       </div>
+      <ToastContainer />
     </section>
   );
 }
