@@ -60,6 +60,9 @@ export const CreatePost: React.FC = () => {
         .then((response) => {
           if (!response.ok) {
             if (response.status === 429) {
+              store.addError(
+                "You are only allowed to post once every 1337 seconds."
+              );
               throw new Error(
                 "You are only allowed to post once every 1337 seconds."
               );
@@ -81,7 +84,6 @@ export const CreatePost: React.FC = () => {
       router.push("/whos1337");
     } catch (error) {
       setIsSubmitting(false);
-      console.error("Error submitting the form:", error);
     }
   };
 
