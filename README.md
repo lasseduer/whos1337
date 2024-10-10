@@ -1,4 +1,4 @@
-# Whos1337 
+# Whos1337
 
 ## Local setup
 
