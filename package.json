@@ -24,7 +24,7 @@
     "@nextui-org/table": "^2.0.40",
     "@nextui-org/theme": "^2.2.11",
     "@react-aria/ssr": "3.9.6",
-    "@react-aria/visually-hidden": "3.8.12",
+    "@react-aria/visually-hidden": "3.8.16",
     "@types/auth0": "^3.3.10",
     "@types/luxon": "^3.4.2",
     "@types/pg": "^8.11.10",
