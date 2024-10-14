@@ -49,7 +49,7 @@ export function getLocalOffsetTimeZone(): TimezoneOffset {
 export function getLocalTimezoneOffset(): string {
   const localTimeZone = getLocalOffsetTimeZone();
 
-  const sign = localTimeZone.offset < 0 ? "-" : "+";
+  const sign = localTimeZone.offset < 0 ? "" : "+";
   const formattedOffset = localTimeZone.offset.toLocaleString("en-US", {
     minimumIntegerDigits: 2,
     useGrouping: false,
