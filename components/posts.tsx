@@ -25,7 +25,7 @@ interface Post {
 
 export const Posts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [isFetchingPosts, setIsFetchingPosts] = React.useState(true);
+  const [isFetchingPosts, setIsFetchingPosts] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const handleGoBackOneDay = () => {
