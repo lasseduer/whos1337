@@ -15,6 +15,9 @@ import { PostDto } from "@/app/models/dtos";
 import { Spinner } from "@nextui-org/spinner";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
+interface PostComponentProps {
+  defaultDate: string;
+}
 interface Post {
   id: number;
   name: string;
@@ -23,10 +26,12 @@ interface Post {
   timeZone: string;
 }
 
-export const Posts = () => {
+export const Posts: React.FC<PostComponentProps> = ({ defaultDate }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isFetchingPosts, setIsFetchingPosts] = useState(true);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    defaultDate ? new Date(defaultDate) : new Date()
+  );
 
   const handleGoBackOneDay = () => {
     const date = new Date(selectedDate);
@@ -77,14 +82,18 @@ export const Posts = () => {
   return (
     <>
       <div className="flex justify-between w-full pb-[10px]">
-        <Button className="flex justify-start" startContent={<FaArrowLeft/>} onClick={handleGoBackOneDay}>
+        <Button
+          className="flex justify-start"
+          startContent={<FaArrowLeft />}
+          onClick={handleGoBackOneDay}
+        >
           Back one day
         </Button>
         <span>{getDateLabel()}</span>
         <Button
           className="flex justify-end"
           disabled={isToday(selectedDate)}
-          endContent={<FaArrowRight/>}
+          endContent={<FaArrowRight />}
           onClick={handleGoForwardOneDay}
         >
           Forward one day

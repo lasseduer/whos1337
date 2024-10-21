@@ -4,6 +4,7 @@ import { title } from "@/components/primitives";
 import TableComponent from "@/components/table";
 import { useEffect, useState } from "react";
 import { PostLeaderboardDto } from "../models/dtos";
+import { format } from "date-fns";
 
 interface Post {
   message: string;
@@ -26,7 +27,7 @@ const LeaderboardPage: React.FC = () => {
           postDtos.map((dto: PostLeaderboardDto, index: number) => ({
             id: index,
             message: dto.message,
-            timestamp: dto.timestamp,
+            timestamp: format(dto.timestamp, "MMMM do"),
             timeDifference: dto.timeDifference,
             nickname: dto.nickname,
           }))
@@ -45,7 +46,11 @@ const LeaderboardPage: React.FC = () => {
       <div className="flex justify-center pb-[30px]">
         <h1 className={title()}>1337erboard</h1>
       </div>
-      <TableComponent data={posts} columns={columns} loading={isFetchingPosts} />
+      <TableComponent
+        data={posts}
+        columns={columns}
+        loading={isFetchingPosts}
+      />
     </>
   );
 };

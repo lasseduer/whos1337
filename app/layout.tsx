@@ -7,7 +7,7 @@ import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 import { Providers } from "./providers";
 import { SharedProvider } from "./store";
-
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: {
@@ -51,7 +51,7 @@ export default function RootLayout({
               <div className="relative flex flex-col h-screen">
                 <Navbar />
                 <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
-                  {children}
+                  <Suspense>{children}</Suspense>
                 </main>
                 <footer className="w-full flex items-center justify-center py-3" />
               </div>

@@ -5,4 +5,5 @@ export interface DbUserRead {
   points: number;
   created: string;
   updated: string;
+  personalBest: string;
 }

@@ -24,10 +24,13 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";
 import { useEffect } from "react";
 import { UserDto } from "@/app/models/dtos";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 export const Navbar = () => {
   const { user } = useUser();
   const store = useSharedContext();
+  const router = useRouter();
 
   useEffect(() => {
     if (user) {
@@ -43,6 +46,7 @@ export const Navbar = () => {
             const storeUser: User = {
               nickname: userDto.nickname ?? "",
               points: `${userDto.points}`,
+              personalBest: `${userDto.personalBest}`,
             };
 
             store.setUser(storeUser);
@@ -54,6 +58,14 @@ export const Navbar = () => {
       store.setUser(null);
     }
   }, [user]);
+
+  const handlePersonalBestClick = () => {
+    if (store.user?.personalBest) {
+      router.push(
+        `/whos1337?defaultDate=${format(store.user.personalBest, "yyyy-MM-dd")}`
+      );
+    }
+  };
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
@@ -100,16 +112,28 @@ export const Navbar = () => {
                 <DropdownItem
                   key="profile"
                   className="h-14 gap-2"
+                  textValue="profile"
                   onClick={() => (window.location.href = "/profile")}
                 >
                   <p className="font-semibold">{store.user?.nickname}</p>
                 </DropdownItem>
-                <DropdownItem key="points">
+                <DropdownItem key="points" textValue="points">
                   {store.user?.points} points
+                </DropdownItem>
+                <DropdownItem
+                  key="personalBest"
+                  textValue="personalBest"
+                  onClick={handlePersonalBestClick}
+                >
+                  PR:&nbsp;
+                  {store.user?.personalBest
+                    ? format(store.user.personalBest, "MMMM do")
+                    : "N/A"}
                 </DropdownItem>
                 <DropdownItem
                   key="logout"
                   color="danger"
+                  textValue="logout"
                   onClick={() => (window.location.href = "/api/auth/logout")}
                 >
                   Log Out

@@ -38,6 +38,7 @@ export const Profile = (): any => {
     const requestBody: UserDto = {
       nickname: formData.nickname,
       points: undefined,
+      personalBest: undefined,
     };
 
     try {
