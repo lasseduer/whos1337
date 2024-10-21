@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDbClient, getUserById, updateUser } from "../utils";
+import {
+  getClosestPostTo1337,
+  getDbClient,
+  getUserById,
+  updateUser,
+} from "../utils";
 import { UserDto } from "@/app/models/dtos/user-dto.model";
 import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { DbUserWrite } from "../models";
@@ -20,10 +25,12 @@ export const GET = withApiAuthRequired(async (_: NextRequest) => {
         error: "User not found",
       });
     }
+    const personalBest = await getClosestPostTo1337(dbClient, user.id, 1);
 
     result = {
       nickname: user.nickname,
       points: user.points,
+      personalBest: personalBest ? personalBest[0]?.timestamp : "",
     };
   } finally {
     dbClient.end();
@@ -60,9 +67,17 @@ export const PUT = withApiAuthRequired(async (res: NextRequest) => {
         error: "User not found",
       });
     }
+
+    const personalBest = await getClosestPostTo1337(
+      dbClient,
+      updatedUser?.id,
+      1
+    );
+
     result = {
       nickname: updatedUser.nickname,
       points: updatedUser.points,
+      personalBest: personalBest ? personalBest[0]?.timestamp : "",
     };
   } finally {
     dbClient.end();

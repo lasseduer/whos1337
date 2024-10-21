@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDbClient, getLeaderboard } from "../utils";
+import { getClosestPostTo1337, getDbClient } from "../utils";
 import { PostLeaderboardDto } from "@/app/models/dtos";
 
 export async function GET(_: NextRequest) {
@@ -8,7 +8,7 @@ export async function GET(_: NextRequest) {
 
   await dbClient.connect();
   try {
-    const leaderboardPosts = await getLeaderboard(dbClient);
+    const leaderboardPosts = await getClosestPostTo1337(dbClient, undefined, 10);
 
     if (leaderboardPosts) {
       result.push(

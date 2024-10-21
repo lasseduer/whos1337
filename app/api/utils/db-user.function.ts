@@ -28,6 +28,7 @@ export async function getUserById(
         points: rows[0].points,
         created: rows[0].created,
         updated: rows[0].updated,
+        personalBest: rows[0].personal_best,
       };
 }
 

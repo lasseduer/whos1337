@@ -1,6 +1,7 @@
 export interface User {
   nickname: string;
   points: string;
+  personalBest: string;
 }
 
 export interface AppError {

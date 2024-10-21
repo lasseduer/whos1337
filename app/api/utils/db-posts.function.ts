@@ -88,8 +88,10 @@ export async function createPost(
   return result;
 }
 
-export async function getLeaderboard(
-  dbClient: Client
+export async function getClosestPostTo1337(
+  dbClient: Client,
+  userId: string | undefined,
+  SelectRows: number
 ): Promise<DbPostLeaderboardRead[] | undefined> {
   const { rows } = await dbClient.query(`
     WITH timeDifference AS (
@@ -107,18 +109,18 @@ export async function getLeaderboard(
       ELSE NULL
 		END AS diff_milliseconds
       FROM events
-      WHERE userid IS NOT NULL
+      WHERE userid ${!userId ? "IS NOT NULL" : "= " + userId}
     )
     SELECT 
       timeDifference.id, 
       timeDifference.message, 
-      TO_CHAR(timeDifference.timestamp AT TIME ZONE timezone, 'Month DD HH24:MI:SS.MS') AS timestamp,
+      TO_CHAR(timeDifference.timestamp AT TIME ZONE timezone, 'YYYY-MM-DD HH24:MI:SS.MS') AS timestamp,
       timeDifference.diff_milliseconds,
       users.nickname
     FROM timeDifference
     LEFT JOIN users ON users.id = timeDifference.userid
     ORDER BY diff_milliseconds ASC
-    LIMIT 10;
+    LIMIT ${SelectRows};
   `);
 
   if (rows.length === 0) {
