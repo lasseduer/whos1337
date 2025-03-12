@@ -6,12 +6,15 @@ import { getLocalOffsetTimeZone, getNextTimeZoneFor1337 } from "./utils";
 import { useSharedContext } from "./store";
 import { Flip, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useOthers, useSelf } from "@liveblocks/react";
 
 export default function Home() {
   const store = useSharedContext();
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isTimezoneVisible, setIsTimezoneVisible] = useState<boolean>(false);
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
+  const users = useOthers();
+  const user = useSelf();
 
   const fadeStyle: CSSProperties = {
     opacity: isFadingOut ? 0 : 2,
@@ -78,6 +81,15 @@ export default function Home() {
         <br />
         <br />
         <br />
+        <div>
+          <div className="text-lg">Players: </div>
+          <div className="text-sm">{user?.info.name}</div>
+          {users.map(({ info }) => {
+            return (
+              <div className="text-sm">{info.name}</div>
+            );
+          })}
+        </div>
         <div className="lg:inline-block lg:text-center lg:justify-center lg:w-[400px]">
           <CreatePost />
         </div>
