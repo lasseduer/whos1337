@@ -5,9 +5,9 @@ import TableComponent from "@/components/table";
 import { useEffect, useState } from "react";
 import { PostLeaderboardDto } from "../models/dtos";
 import { format } from "date-fns";
-import { useSharedContext } from "../store";
 import { AppError } from "../store/store.model";
 import { handleError } from "../api/utils/errors";
+import { Errors } from "@/components/errors";
 
 interface Post {
   message: string;
@@ -75,15 +75,7 @@ const LeaderboardPage: React.FC = () => {
         <h1 className={title()}>1337erboard</h1>
       </div>
       
-      {errors.length > 0 && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-          <ul className="list-disc pl-5">
-            {errors.map((error, index) => (
-              <li key={index}>{error.message}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <Errors errors={errors} />
       
       <TableComponent
         data={posts}
