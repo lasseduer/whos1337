@@ -12,7 +12,7 @@ const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   const userSession = await getSession();
   const user = userSession?.user;
 
@@ -31,5 +31,6 @@ export async function POST(request: NextRequest) {
   session.allow(`whos1337`, session.READ_ACCESS);
 
   const { status, body } = await session.authorize();
+  
   return new NextResponse(body, { status });
 }
