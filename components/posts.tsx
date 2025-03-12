@@ -16,6 +16,7 @@ import { Spinner } from "@nextui-org/spinner";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { AppError } from "@/app/store";
 import { handleError } from "@/app/api/utils/errors";
+import { Errors } from "./errors";
 
 interface PostComponentProps {
   defaultDate: string;
@@ -102,6 +103,7 @@ export const Posts: React.FC<PostComponentProps> = ({ defaultDate }) => {
           Forward one day
         </Button>
       </div>
+      <Errors errors={errors} />
       <Table aria-label="Table of posts">
         <TableHeader>
           <TableColumn>Name</TableColumn>

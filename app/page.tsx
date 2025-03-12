@@ -6,7 +6,7 @@ import { getLocalOffsetTimeZone, getNextTimeZoneFor1337 } from "./utils";
 import { useSharedContext } from "./store";
 import { Flip, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useOthers, useSelf } from "@liveblocks/react";
+import { useOthersMapped, useSelf } from "@liveblocks/react";
 import { Avatar } from "@nextui-org/avatar";
 
 export default function Home() {
@@ -14,7 +14,10 @@ export default function Home() {
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isTimezoneVisible, setIsTimezoneVisible] = useState<boolean>(false);
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
-  const users = useOthers();
+  const users = useOthersMapped((other) => ({
+    connectionId: other.connectionId,
+    info: other.info,
+  }));
   const user = useSelf();
 
   const fadeStyle: CSSProperties = {
@@ -84,9 +87,9 @@ export default function Home() {
           <div className="flex items-center justify-center gap-2">
             <Avatar showFallback name={user?.info.name} src={user?.info.avatar} />
             {
-            users.map((user) => {
+            users.map(([connectionId, user]) => {
               return (
-                <Avatar key={user?.info.name} showFallback name={user?.info?.name} src={user.info?.avatar} />
+                <Avatar key={connectionId} showFallback name={user.info?.name} src={user.info?.avatar} />
               );
             })}
           </div>
