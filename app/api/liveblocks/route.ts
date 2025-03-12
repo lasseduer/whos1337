@@ -1,7 +1,7 @@
 import { generateName } from "@/app/utils";
 import { getSession } from "@auth0/nextjs-auth0";
 import { Liveblocks } from "@liveblocks/node";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 /**
  * Authenticating your Liveblocks application
@@ -15,11 +15,12 @@ const liveblocks = new Liveblocks({
 export async function POST() {
   const userSession = await getSession();
   const user = userSession?.user;
-
+  const userName = user?.nickname ?? generateName();
+  
   const userInfo = {
-    name: user?.nickname ?? generateName(),
+    name: userName,
     email: user?.email,
-    avatar: user?.picture ?? "https://i.pravatar.cc/300",
+    avatar: user?.picture ?? `https://api.dicebear.com/9.x/notionists-neutral/svg?seed=${userName}`,
   }
 
   // Create a session for the current user (access token auth)

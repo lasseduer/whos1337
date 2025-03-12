@@ -5,6 +5,9 @@ import TableComponent from "@/components/table";
 import { useEffect, useState } from "react";
 import { PostLeaderboardDto } from "../models/dtos";
 import { format } from "date-fns";
+import { useSharedContext } from "../store";
+import { AppError } from "../store/store.model";
+import { handleError } from "../api/utils/errors";
 
 interface Post {
   message: string;
@@ -18,6 +21,7 @@ const LeaderboardPage: React.FC = () => {
   const [isFetchingPosts, setIsFetchingPosts] = useState(false);
   const [shamePosts, setShamePosts] = useState<Post[]>([]);
   const [isFetchingShamePosts, setIsFetchingShamePosts] = useState(false);
+  const [errors, setErrors] = useState<AppError[]>([]);
 
   useEffect(() => {
     setIsFetchingPosts(true);
@@ -35,8 +39,8 @@ const LeaderboardPage: React.FC = () => {
           }))
         );
       })
-      .catch((error) => {
-        console.error("Error fetching leaderboard posts", error);
+      .catch((error: any) => {
+        setErrors([handleError(400, error)])
       })
       .finally(() => setIsFetchingPosts(false));
   }, []);
@@ -58,7 +62,7 @@ const LeaderboardPage: React.FC = () => {
         );
       })
       .catch((error) => {
-        console.error("Error fetching shameboard posts", error);
+        setErrors([handleError(400, error)])
       })
       .finally(() => setIsFetchingShamePosts(false));
   }, []);
@@ -70,11 +74,23 @@ const LeaderboardPage: React.FC = () => {
       <div className="flex justify-center pb-[30px]">
         <h1 className={title()}>1337erboard</h1>
       </div>
+      
+      {errors.length > 0 && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+          <ul className="list-disc pl-5">
+            {errors.map((error, index) => (
+              <li key={index}>{error.message}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
       <TableComponent
         data={posts}
         columns={columns}
         loading={isFetchingPosts}
       />
+
       <br />
       <br />
       <div className="flex justify-center pb-[30px]">

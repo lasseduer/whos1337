@@ -7,6 +7,7 @@ import { useSharedContext } from "./store";
 import { Flip, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useOthers, useSelf } from "@liveblocks/react";
+import { Avatar } from "@nextui-org/avatar";
 
 export default function Home() {
   const store = useSharedContext();
@@ -78,17 +79,17 @@ export default function Home() {
         {isTimezoneVisible && <span className={title()}>{getUtcLabel()}</span>}
         <br />
         <br />
-        <br />
-        <br />
-        <br />
-        <div>
-          <div className="text-lg">Players: </div>
-          <div className="text-sm">{user?.info.name}</div>
-          {users.map(({ info }) => {
-            return (
-              <div className="text-sm">{info.name}</div>
-            );
-          })}
+        <div className="mb-2">
+          <div className="text-lg mb-2">1337'ers: </div>
+          <div className="flex items-center justify-center gap-2">
+            <Avatar showFallback name={user?.info.name} src={user?.info.avatar} />
+            {
+            users.map((user) => {
+              return (
+                <Avatar showFallback name={user?.info?.name} src={user.info?.avatar} />
+              );
+            })}
+          </div>
         </div>
         <div className="lg:inline-block lg:text-center lg:justify-center lg:w-[400px]">
           <CreatePost />
