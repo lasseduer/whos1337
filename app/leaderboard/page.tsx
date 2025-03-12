@@ -78,8 +78,8 @@ const LeaderboardPage: React.FC = () => {
       <Errors errors={errors} />
       
       <TableComponent
-        data={posts}
         columns={columns}
+        data={posts}
         loading={isFetchingPosts}
       />
 
@@ -89,8 +89,8 @@ const LeaderboardPage: React.FC = () => {
         <h1 className={title()}>Board of shame</h1>
       </div>
       <TableComponent
-        data={shamePosts}
         columns={columns}
+        data={shamePosts}
         loading={isFetchingShamePosts}
       />
     </>

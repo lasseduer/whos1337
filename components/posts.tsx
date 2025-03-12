@@ -14,6 +14,8 @@ import { Button } from "@nextui-org/button";
 import { PostDto } from "@/app/models/dtos";
 import { Spinner } from "@nextui-org/spinner";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { AppError } from "@/app/store";
+import { handleError } from "@/app/api/utils/errors";
 
 interface PostComponentProps {
   defaultDate: string;
@@ -32,6 +34,7 @@ export const Posts: React.FC<PostComponentProps> = ({ defaultDate }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(
     defaultDate ? new Date(defaultDate) : new Date()
   );
+  const [errors, setErrors] = useState<AppError[]>([]);
 
   const handleGoBackOneDay = () => {
     const date = new Date(selectedDate);
@@ -74,7 +77,7 @@ export const Posts: React.FC<PostComponentProps> = ({ defaultDate }) => {
         );
       })
       .catch((error) => {
-        console.error("Error fetching posts", error);
+        setErrors([handleError(400, error)]);
       })
       .finally(() => setIsFetchingPosts(false));
   }, [selectedDate]);
@@ -85,7 +88,7 @@ export const Posts: React.FC<PostComponentProps> = ({ defaultDate }) => {
         <Button
           className="flex justify-start"
           startContent={<FaArrowLeft />}
-          onClick={handleGoBackOneDay}
+          onPress={handleGoBackOneDay}
         >
           Back one day
         </Button>
@@ -94,7 +97,7 @@ export const Posts: React.FC<PostComponentProps> = ({ defaultDate }) => {
           className="flex justify-end"
           disabled={isToday(selectedDate)}
           endContent={<FaArrowRight />}
-          onClick={handleGoForwardOneDay}
+          onPress={handleGoForwardOneDay}
         >
           Forward one day
         </Button>

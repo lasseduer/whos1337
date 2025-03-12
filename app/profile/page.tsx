@@ -6,6 +6,7 @@ import { ChangeEvent, useState } from "react";
 import { useSharedContext, User, AppError } from "../store";
 import { UserDto } from "../models/dtos";
 import { handleError } from "../api/utils/errors";
+import { Errors } from "@/components/errors";
 
 interface FormData {
   nickname: string;
@@ -92,6 +93,7 @@ export const Profile = (): any => {
           value={formData.nickname}
           onChange={handleChange}
         />
+        <Errors errors={error} />
         <Spacer y={1.5} />
         <Button
           color="primary"
