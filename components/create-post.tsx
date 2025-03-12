@@ -6,10 +6,12 @@ import { Spacer } from "@nextui-org/spacer";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { format } from "date-fns";
-import { User, useSharedContext } from "@/app/store";
+import { AppError, User, useSharedContext } from "@/app/store";
 import { CreatePostResponseDto, NewPostDto } from "@/app/models/dtos";
 import { getLocalTimezoneOffset } from "@/app/utils";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { handleError } from "@/app/api/utils/errors";
+import { Errors } from "@/components/errors";
 
 interface FormData {
   message: string;
@@ -18,6 +20,7 @@ interface FormData {
 export const CreatePost: React.FC = () => {
   const store = useSharedContext();
   const { user } = useUser();
+  const [errors, setErrors] = useState<AppError[]>([]);
 
   const router = useRouter();
   // State to hold form inputs with typed data
@@ -83,7 +86,7 @@ export const CreatePost: React.FC = () => {
         });
       router.push("/whos1337");
     } catch (error) {
-      console.error(error);
+      setErrors([handleError(400, error)]);
     } finally {
       setIsSubmitting(false);
     }
@@ -102,12 +105,13 @@ export const CreatePost: React.FC = () => {
           value={formData.message}
           onChange={handleChange}
         />
+        <Errors errors={errors} />
         <Spacer y={1.5} />
         <Button
           color="primary"
           disabled={isSubmitting || !formData.message}
           isLoading={isSubmitting}
-          onClick={handleSubmit}
+          onPress={handleSubmit}
         >
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>

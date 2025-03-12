@@ -113,7 +113,7 @@ export const Navbar = () => {
                   key="profile"
                   className="h-14 gap-2"
                   textValue="profile"
-                  onClick={() => (window.location.href = "/profile")}
+                  onPress={() => (window.location.href = "/profile")}
                 >
                   <p className="font-semibold">{store.user?.nickname}</p>
                 </DropdownItem>
@@ -123,7 +123,7 @@ export const Navbar = () => {
                 <DropdownItem
                   key="personalBest"
                   textValue="personalBest"
-                  onClick={handlePersonalBestClick}
+                  onPress={handlePersonalBestClick}
                 >
                   PR:&nbsp;
                   {store.user?.personalBest
@@ -134,7 +134,7 @@ export const Navbar = () => {
                   key="logout"
                   color="danger"
                   textValue="logout"
-                  onClick={() => (window.location.href = "/api/auth/logout")}
+                  onPress={() => (window.location.href = "/api/auth/logout")}
                 >
                   Log Out
                 </DropdownItem>
@@ -144,7 +144,7 @@ export const Navbar = () => {
             <>
               <Button
                 color="secondary"
-                onClick={() => (window.location.href = "/api/auth/login")}
+                onPress={() => (window.location.href = "/api/auth/login")}
               >
                 Login
               </Button>

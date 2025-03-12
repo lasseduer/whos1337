@@ -3,8 +3,10 @@ import { title } from "@/components/primitives";
 import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0/client";
 import { Button, Input, Spacer } from "@nextui-org/react";
 import { ChangeEvent, useState } from "react";
-import { useSharedContext, User } from "../store";
+import { useSharedContext, User, AppError } from "../store";
 import { UserDto } from "../models/dtos";
+import { handleError } from "../api/utils/errors";
+import { Errors } from "@/components/errors";
 
 interface FormData {
   nickname: string;
@@ -13,6 +15,7 @@ interface FormData {
 export const Profile = (): any => {
   const store = useSharedContext();
   const { user } = useUser();
+  const [error, setError] = useState<AppError[]>([]);
 
   // State to hold form inputs with typed data
   const [formData, setFormData] = useState<FormData>({
@@ -68,7 +71,7 @@ export const Profile = (): any => {
           }
         });
     } catch (error) {
-      console.error(error);
+      setError([handleError(400, error)]);
     } finally {
       setIsSubmitting(false);
     }
@@ -90,12 +93,13 @@ export const Profile = (): any => {
           value={formData.nickname}
           onChange={handleChange}
         />
+        <Errors errors={error} />
         <Spacer y={1.5} />
         <Button
           color="primary"
           disabled={isSubmitting || !formData.nickname}
           isLoading={isSubmitting}
-          onClick={handleSubmit}
+          onPress={handleSubmit}
         >
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>

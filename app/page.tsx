@@ -6,12 +6,19 @@ import { getLocalOffsetTimeZone, getNextTimeZoneFor1337 } from "./utils";
 import { useSharedContext } from "./store";
 import { Flip, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useOthersMapped, useSelf } from "@liveblocks/react";
+import { Avatar } from "@nextui-org/avatar";
 
 export default function Home() {
   const store = useSharedContext();
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isTimezoneVisible, setIsTimezoneVisible] = useState<boolean>(false);
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
+  const users = useOthersMapped((other) => ({
+    connectionId: other.connectionId,
+    info: other.info,
+  }));
+  const user = useSelf();
 
   const fadeStyle: CSSProperties = {
     opacity: isFadingOut ? 0 : 2,
@@ -75,9 +82,18 @@ export default function Home() {
         {isTimezoneVisible && <span className={title()}>{getUtcLabel()}</span>}
         <br />
         <br />
-        <br />
-        <br />
-        <br />
+        <div className="mb-2">
+          <div className="text-lg mb-2">1337ers: </div>
+          <div className="flex items-center justify-center gap-2">
+            <Avatar showFallback name={user?.info.name} src={user?.info.avatar} />
+            {
+            users.map(([connectionId, user]) => {
+              return (
+                <Avatar key={connectionId} showFallback name={user.info?.name} src={user.info?.avatar} />
+              );
+            })}
+          </div>
+        </div>
         <div className="lg:inline-block lg:text-center lg:justify-center lg:w-[400px]">
           <CreatePost />
         </div>
