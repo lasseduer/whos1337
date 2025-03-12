@@ -83,7 +83,7 @@ export default function Home() {
         <br />
         <br />
         <div className="mb-2">
-          <div className="text-lg mb-2">13373RS: </div>
+          <div className="text-lg mb-2">1337ers: </div>
           <div className="flex items-center justify-center gap-2">
             <Avatar showFallback name={user?.info.name} src={user?.info.avatar} />
             {

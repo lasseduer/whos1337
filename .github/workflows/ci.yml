@@ -26,4 +26,6 @@ jobs:
         run: npm run test
 
       - name: npm run build
+        env:
+          LIVEBLOCKS_SECRET_KEY: ${{ secrets.LIVEBLOCKS_SECRET_KEY }}
         run: npm run build
