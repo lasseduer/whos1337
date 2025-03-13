@@ -43,7 +43,6 @@ export const CreatePost: React.FC = () => {
   const handleSubmit = async (e: any) => {
     const postCreated = new Date();
 
-    e.preventDefault(); // Prevent page reload on form submit
     setIsSubmitting(true);
 
     const requestBody: NewPostDto = {
@@ -94,14 +93,14 @@ export const CreatePost: React.FC = () => {
 
   return (
     <div>
-      <form>
+      <form noValidate>
         <Spacer y={1.5} /> {/* Adds space between form elements */}
         <Input
           fullWidth
           required
           label="Message"
           name="message"
-          type="email"
+          type="text"
           value={formData.message}
           onChange={handleChange}
         />
