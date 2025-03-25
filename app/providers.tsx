@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
 import { LiveblocksProvider, RoomProvider } from "@liveblocks/react";
+import { getRoom } from "./api/utils/room";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <NextUIProvider navigate={router.push}>
       <NextThemesProvider {...themeProps}>
         <LiveblocksProvider authEndpoint={"/api/liveblocks"}>
-          <RoomProvider id={"whos1337"}>
+          <RoomProvider autoConnect={false} id={getRoom("whos1337")}>
             {children}
           </RoomProvider>
         </LiveblocksProvider>
