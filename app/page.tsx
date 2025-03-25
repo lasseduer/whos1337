@@ -21,8 +21,9 @@ export default function Home() {
   const user = useSelf();
   const room = useRoom();
 
-  if (store.user) { room.connect(); }
-
+  useEffect(() => {
+    if (store.user) { room.connect(); }
+  }, [store.user]);
   const fadeStyle: CSSProperties = {
     opacity: isFadingOut ? 0 : 2,
     transition: "opacity 1s ease-in-out",
