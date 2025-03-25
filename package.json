@@ -11,7 +11,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@auth0/nextjs-auth0": "^3.5.0",
+    "@auth0/nextjs-auth0": "3.7.0",
     "@liveblocks/client": "^2.20.0",
     "@liveblocks/node": "^2.20.0",
     "@liveblocks/react": "^2.20.0",
@@ -36,7 +36,7 @@
     "framer-motion": "~11.11.7",
     "intl-messageformat": "^10.5.0",
     "luxon": "^3.5.0",
-    "next": "14.2.10",
+    "next": "14.2.25",
     "next-themes": "^0.2.1",
     "pg": "^8.13.0",
     "react": "18.3.1",
