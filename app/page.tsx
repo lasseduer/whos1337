@@ -6,7 +6,7 @@ import { getLocalOffsetTimeZone, getNextTimeZoneFor1337 } from "./utils";
 import { useSharedContext } from "./store";
 import { Flip, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useOthersMapped, useSelf } from "@liveblocks/react";
+import { useOthersMapped, useRoom, useSelf } from "@liveblocks/react";
 import { Avatar } from "@nextui-org/avatar";
 
 export default function Home() {
@@ -19,7 +19,11 @@ export default function Home() {
     info: other.info,
   }));
   const user = useSelf();
+  const room = useRoom();
 
+  useEffect(() => {
+    if (store.user) { room.connect(); }
+  }, [store.user]);
   const fadeStyle: CSSProperties = {
     opacity: isFadingOut ? 0 : 2,
     transition: "opacity 1s ease-in-out",
@@ -83,16 +87,27 @@ export default function Home() {
         <br />
         <br />
         <div className="mb-2">
-          <div className="text-lg mb-2">1337ers: </div>
-          <div className="flex items-center justify-center gap-2">
-            <Avatar showFallback name={user?.info.name} src={user?.info.avatar} />
-            {
-            users.map(([connectionId, user]) => {
-              return (
-                <Avatar key={connectionId} showFallback name={user.info?.name} src={user.info?.avatar} />
-              );
-            })}
-          </div>
+          {
+            store.user && (
+              <div>
+                <div className="text-lg mb-2">Online 1337ers: </div>
+                <div className="flex items-center justify-center gap-2">
+                  {
+                    user && (
+                      <Avatar showFallback name={user.info.name} src={user.info.avatar} />
+                    )
+                  }
+                  {
+                    users.map(([connectionId, user]) => {
+                      return (
+                        <Avatar key={connectionId} showFallback name={user.info.name} src={user.info.avatar} />
+                      );
+                    })
+                  }
+                </div>
+              </div>
+            )
+          }
         </div>
         <div className="lg:inline-block lg:text-center lg:justify-center lg:w-[400px]">
           <CreatePost />
